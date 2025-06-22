@@ -1,0 +1,32 @@
+stages:
+  - validate
+  - plan
+  - apply
+
+variables:
+  TF_VAR_project_name: "webapp"
+  TF_VAR_region: "us-east-1"
+  TF_ROOT: "."
+
+validate:
+  stage: validate
+  image: hashicorp/terraform:latest
+  script:
+    - cd $TF_ROOT
+    - terraform init -input=false
+    - terraform validate
+
+plan:
+  stage: plan
+  image: hashicorp/terraform:latest
+  script:
+    - cd $TF_ROOT
+    - terraform plan -out=tfplan
+
+apply:
+  stage: apply
+  image: hashicorp/terraform:latest
+  when: manual
+  script:
+    - cd $TF_ROOT
+    - terraform apply -auto-approve tfplan
